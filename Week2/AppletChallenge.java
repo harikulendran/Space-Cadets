@@ -36,8 +36,6 @@ class animationFrame extends JPanel {
 	public final static int INTERVAL = 2;
 
 	public animationFrame() {
-
-		this.setLayout(new FlowLayout());
 		//create and implement the start button
 		startJB = new JButton("Start");
 		startJB.addActionListener(new ActionListener() {
