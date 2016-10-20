@@ -36,8 +36,34 @@ class mainFrame extends JPanel {
 	JTextField rtf = new JTextField("Inner Radius");
 	JTextField otf = new JTextField("Offset");
 
+	Checkbox Rbox = new Checkbox("Sweep R",false);
+	Checkbox rbox = new Checkbox("Sweep r",false);
+	Checkbox obox = new Checkbox("Sweep o",false);
+
 	JButton draw = new JButton("Draw");
 	JButton animate = new JButton("Animate");
+	JButton sweep = new JButton("Sweep");
+	
+	int animOption = 0;
+
+	//Sweep vars very messy
+	Boolean sweepR = false;
+	Boolean sweepr = false;
+	Boolean sweepo = false;
+
+	int Rhs;
+	int rhs;
+	int ohs;
+
+	int Ris;
+	int ris;
+	int ois;
+
+	int Rmod = 1;
+	int rmod = 1;
+	int omod = 1;
+
+
 
 	public final static int INTERVAL = 1;
 	int step=0;
@@ -90,6 +116,39 @@ class mainFrame extends JPanel {
 		}
 	}
 
+	public void animateSweepImage() {
+		if (sweepR) {
+			if (Ris > Rhs + 50) {
+				Rmod = -1;
+			} 
+			if (Ris < Rhs - 50) {
+				Rmod = 1;
+			}
+			Ris += Rmod;
+		}
+		if (sweepr) {
+			if (ris > rhs + 50) {
+				rmod = -1;
+			} 
+			if (ris < rhs - 50) {
+				rmod = 1;
+			}
+			ris += rmod;
+		}
+		if (sweepo) {
+			if (ois > ohs + 50) {
+				omod = -1;
+			} 
+			if (ois < ohs - 50) {
+				omod = 1;
+			}
+			ois += omod;
+		}
+		
+		validate(Integer.toString(Ris),Integer.toString(ris),Integer.toString(ois));
+		createImage();
+	}
+
 	public void calculateImage() {
 		clearImage();
 		hc = h.getCoordinates();
@@ -116,10 +175,14 @@ class mainFrame extends JPanel {
 	}
 
 	public mainFrame() {
-		//input fields
+		//input fieldsanima
 		add(Rtf);
 		add(rtf);
 		add(otf);
+
+		add(Rbox);
+		add(rbox);
+		add(obox);
 		
 		//draw button
 		draw.addActionListener(new ActionListener() {
@@ -145,6 +208,7 @@ class mainFrame extends JPanel {
 				String o = otf.getText();
 				validate(R,r,o);
 				calculateImage();
+				animOption = 0;
 				running = true;
 				time.start();
 			}
@@ -152,11 +216,37 @@ class mainFrame extends JPanel {
 
 		add(animate);
 		
+		sweep.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String R = Rtf.getText();
+				String r = rtf.getText();
+				String o = otf.getText();
+				validate(R,r,o);
+				Ris = Integer.parseInt(R);
+				ris = Integer.parseInt(r);
+				ois = Integer.parseInt(o);
+				Rhs = Ris;
+				rhs = ris;
+				ohs = ois;
+				sweepR = Rbox.getState();
+				sweepr = rbox.getState();
+				sweepo = obox.getState();
+				animOption = 1;
+				running = true;
+				time.start();
+			}
+		});
+
+		add(sweep);
 
 		//Timer from animation
 		time = new Timer(INTERVAL, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				animateCreateImage();
+				if (animOption == 0) {
+					animateCreateImage();
+				} else if (animOption == 1) {
+					animateSweepImage();
+				}
 				if (!running) {
 					time.stop();
 				}
