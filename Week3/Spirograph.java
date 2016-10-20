@@ -39,7 +39,7 @@ class mainFrame extends JPanel {
 	JButton draw = new JButton("Draw");
 	JButton animate = new JButton("Animate");
 
-	public final static int INTERVAL = 2;
+	public final static int INTERVAL = 1;
 	int step=0;
 	
 	public void validate(String R, String r, String o) {
@@ -50,7 +50,7 @@ class mainFrame extends JPanel {
 			Ri = Integer.parseInt(R);
 			ri = Integer.parseInt(r);
 			oi = Integer.parseInt(o);
-			h = new Hypocloid(Ri,ri,oi,10000);
+			h = new Hypocloid(Ri,ri,oi,20000);
 		} catch (Exception e) {
 			System.err.println("Input Error");
 			error = true;

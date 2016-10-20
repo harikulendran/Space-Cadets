@@ -23,7 +23,7 @@ public class Hypocloid {
 	
 	public HashMap<Integer,Coords> getCoordinates() {
 		for (int i=0; i < fidelity; i++) {
-			t = i;
+			t = (double)i/4;
 			double x = (R+r)*Math.cos(t) - (r+O)*Math.cos(((R+r)/r)*t);
 			double y = (R+r)*Math.sin(t) - (r+O)*Math.sin(((R+r)/r)*t);
 			//System.out.println(x);
