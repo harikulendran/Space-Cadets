@@ -136,10 +136,10 @@ class mainFrame extends JPanel {
 			ris += rmod;
 		}
 		if (sweepo) {
-			if (ois > ohs + 50) {
+			if (ois > ohs + 100) {
 				omod = -1;
 			} 
-			if (ois < ohs - 50) {
+			if (ois < ohs - 100) {
 				omod = 1;
 			}
 			ois += omod;
