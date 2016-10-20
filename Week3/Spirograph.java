@@ -29,6 +29,8 @@ class mainFrame extends JPanel {
 
 	String errorText;
 	Boolean error = false;
+	String alertText;
+	Boolean alert = false;
 	
 	JTextField Rtf = new JTextField("Outer Radius");
 	JTextField rtf = new JTextField("Inner Radius");
@@ -75,6 +77,8 @@ class mainFrame extends JPanel {
 	}
 	
 	public void animateCreateImage() {
+		alert = true;
+		alertText = step*(100/(double)hcNorm.size()) + "%";
 		Coords c = hcNorm.get(step);
 		step++;
 		image.setRGB((int)c.getX(),(int)c.getY(),col);
@@ -82,7 +86,7 @@ class mainFrame extends JPanel {
 		if (step >= hcNorm.size()) {
 			running = false;
 			step = 0;
-			System.out.println("DONE");
+			alertText = "DONE!";
 		}
 	}
 
@@ -105,6 +109,10 @@ class mainFrame extends JPanel {
 		} else {
 			g.drawImage(image,norm.getXOff(),norm.getYOff(),null);
 		}
+
+		if (alert) {
+			g.drawString(alertText,1200,710);
+		}
 	}
 
 	public mainFrame() {
@@ -117,6 +125,7 @@ class mainFrame extends JPanel {
 		draw.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				running = false;
+				alert = false;
 				String R = Rtf.getText();
 				String r = rtf.getText();
 				String o = otf.getText();
