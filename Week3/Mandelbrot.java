@@ -38,7 +38,6 @@ public class Mandelbrot {
 			}
 			y += (double)4/((double)size-1);
 		}
-		System.out.println(x + " " + y);
 		return output;
 	}
 }
