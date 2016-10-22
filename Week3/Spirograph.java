@@ -38,7 +38,7 @@ class mainFrame extends JPanel {
 	
 	JTextField Rtf = new JTextField("Outer Radius");
 	JTextField rtf = new JTextField("Inner Radius");
-	JTextField otf = new JTextField("Offset");
+	JTextField otf = new JTextField("Offset Value");
 
 	Checkbox Rbox = new Checkbox("Sweep R",false);
 	Checkbox rbox = new Checkbox("Sweep r",false);
@@ -230,7 +230,8 @@ class mainFrame extends JPanel {
 					} catch (Exception ex) {
 						System.err.println(ex);
 						error = true;
-						errorText = "There was an error with your input, 0 + 0i Mandelbrot drawn";
+						errorText = "There was an error with your input, please try again";
+						repaint();
 					}
 				}
 			}
@@ -303,6 +304,7 @@ class mainFrame extends JPanel {
 					spiro = true;
 					Rtf.setText("Outer Radius");
 					rtf.setText("Inner Radius");
+					otf.setText("Offset Value");
 					swap.setText("Mandelbrot Set");
 				}
 			}
