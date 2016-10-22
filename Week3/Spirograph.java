@@ -15,11 +15,15 @@ public class Spirograph extends JApplet {
 class mainFrame extends JPanel {
 	Timer time;
 	Boolean running = true;
+	Boolean spiro = true;
 
 	Hypocloid h = new Hypocloid(80,35,60,10000);
+	Mandelbrot mSet;
 	HashMap<Integer,Coords> hc;
 	HashMap<Integer,Coords> hcNorm;
 	Normalize norm = new Normalize(501,501);
+
+	HashMap<Integer,Integer> mand;
 
 	BufferedImage image = new BufferedImage(501,501,BufferedImage.TYPE_INT_ARGB);
 	Color red = new Color(0,0,0);
@@ -43,6 +47,7 @@ class mainFrame extends JPanel {
 	JButton draw = new JButton("Draw");
 	JButton animate = new JButton("Animate");
 	JButton sweep = new JButton("Sweep");
+	JButton swap = new JButton("Mandelbrot Set");
 	
 	int animOption = 0;
 
@@ -98,6 +103,16 @@ class mainFrame extends JPanel {
 		for (int i=0; i < hcNorm.size(); i++) {
 			Coords c = hcNorm.get(i);
 			image.setRGB((int)c.getX(),(int)c.getY(),col);
+		}
+		repaint();
+	}
+	
+	public void drawMandelbrot(int size) {
+		clearImage();
+		for (int j=0; j<size; j++) {
+			for (int i=0; i<size; i++) {
+				image.setRGB(i,j,mand.get(size*j+i));
+			}
 		}
 		repaint();
 	}
@@ -197,12 +212,26 @@ class mainFrame extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				running = false;
 				alert = false;
-				String R = Rtf.getText();
-				String r = rtf.getText();
-				String o = otf.getText();
-				validate(R,r,o);
-				calculateImage();
-				createImage();
+				if (spiro) {
+					String R = Rtf.getText();
+					String r = rtf.getText();
+					String o = otf.getText();
+					validate(R,r,o);
+					calculateImage();
+					createImage();
+				} else {
+					try {
+						double manI = Double.parseDouble(Rtf.getText());
+						double manJ = Double.parseDouble(rtf.getText());
+						mSet = new Mandelbrot(new ComplexNumber(manI,manJ));
+					} catch (Exception ex) {
+						System.err.println(ex);
+						error = true;
+						errorText = "There was an error with your input, 0 + 0i Mandelbrot drawn";
+					}
+					mand = mSet.plotMandelbrot(500);
+					drawMandelbrot(500);
+				}
 			}
 		});
 		
@@ -211,15 +240,21 @@ class mainFrame extends JPanel {
 		//animate button
 		animate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String R = Rtf.getText();
-				String r = rtf.getText();
-				String o = otf.getText();
-				validate(R,r,o);
-				calculateImage();
-				animOption = 0;
-				running = true;
-				alert = true;
-				time.start();
+				if (spiro) {
+					String R = Rtf.getText();
+					String r = rtf.getText();
+					String o = otf.getText();
+					validate(R,r,o);
+					calculateImage();
+					animOption = 0;
+					running = true;
+					alert = true;
+					time.start();
+				} else {
+					error = true;
+					errorText = "Cannot animate Mandelbrot set";
+					repaint();
+				}
 			}
 		});
 
@@ -227,27 +262,52 @@ class mainFrame extends JPanel {
 		
 		sweep.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String R = Rtf.getText();
-				String r = rtf.getText();
-				String o = otf.getText();
-				validate(R,r,o);
-				Ris = Integer.parseInt(R);
-				ris = Integer.parseInt(r);
-				ois = Integer.parseInt(o);
-				Rhs = Ris;
-				rhs = ris;
-				ohs = ois;
-				sweepR = Rbox.getState();
-				sweepr = rbox.getState();
-				sweepo = obox.getState();
-				animOption = 1;
-				running = true;
-				alert = true;
-				time.start();
+				if (spiro) {
+					String R = Rtf.getText();
+					String r = rtf.getText();
+					String o = otf.getText();
+					validate(R,r,o);
+					Ris = Integer.parseInt(R);
+					ris = Integer.parseInt(r);
+					ois = Integer.parseInt(o);
+					Rhs = Ris;
+					rhs = ris;
+					ohs = ois;
+					sweepR = Rbox.getState();
+					sweepr = rbox.getState();
+					sweepo = obox.getState();
+					animOption = 1;
+					running = true;
+					alert = true;
+					time.start();
+				} else {
+					error = true;
+					errorText = "Cannot sweep Mandelbrot set";
+					repaint();
+				}
 			}
 		});
 
 		add(sweep);
+
+		swap.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (spiro) {
+					spiro = false;
+					Rtf.setText("Z Real");
+					rtf.setText("Z Imag");
+					otf.setText("Unused");
+					swap.setText("Spirographs");
+				} else {
+					spiro = true;
+					Rtf.setText("Outer Radius");
+					rtf.setText("Inner Radius");
+					swap.setText("Mandelbrot Set");
+				}
+			}
+		});
+
+		add(swap);
 
 		//Timer from animation
 		time = new Timer(INTERVAL, new ActionListener() {
