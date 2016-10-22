@@ -4,9 +4,15 @@ import java.awt.Color;
 public class Mandelbrot {
 	ComplexNumber Z;
 	double c;
+	double xMin;
+	double yMin;
+	double range;
 
-	public Mandelbrot (ComplexNumber Zin) {
+	public Mandelbrot (ComplexNumber Zin,double xmin,double ymin,double zoom) {
 		Z = Zin;
+		xMin = xmin;
+		yMin = ymin;
+		range = zoom;
 	}
 	
 	public ComplexNumber iterate(ComplexNumber z, ComplexNumber c) {
@@ -28,15 +34,15 @@ public class Mandelbrot {
 
 	public HashMap<Integer,Integer> plotMandelbrot(int size) {
 		HashMap<Integer,Integer> output = new HashMap<Integer,Integer>();
-		double x = -1;
-		double y = -1;
+		double x = xMin;
+		double y = yMin;
 		for (int j=0; j<size; j++) {
-			x = -1;
+			x = xMin;
 			for (int i=0; i<size; i++) {
 				output.put(size*j+i,checkBounds(new ComplexNumber(x,y)));
-				x += (double)2/((double)size-1);
+				x += Math.abs(range)/((double)size-1);
 			}
-			y += (double)2/((double)size-1);
+			y += Math.abs(range)/((double)size-1);
 		}
 		return output;
 	}

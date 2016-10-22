@@ -223,7 +223,8 @@ class mainFrame extends JPanel {
 					try {
 						double manI = Double.parseDouble(Rtf.getText());
 						double manJ = Double.parseDouble(rtf.getText());
-						mSet = new Mandelbrot(new ComplexNumber(manI,manJ));
+						double range = Double.parseDouble(otf.getText());
+						mSet = new Mandelbrot(new ComplexNumber(0,0),manI,manJ,range);
 						mand = mSet.plotMandelbrot(500);
 						drawMandelbrot(500);
 					} catch (Exception ex) {
@@ -294,9 +295,9 @@ class mainFrame extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (spiro) {
 					spiro = false;
-					Rtf.setText("Z Real");
-					rtf.setText("Z Imag");
-					otf.setText("Unused");
+					Rtf.setText("X min");
+					rtf.setText("Y min");
+					otf.setText("Range");
 					swap.setText("Spirographs");
 				} else {
 					spiro = true;
