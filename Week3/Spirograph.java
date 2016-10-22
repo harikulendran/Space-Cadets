@@ -103,7 +103,6 @@ class mainFrame extends JPanel {
 	}
 	
 	public void animateCreateImage() {
-		alert = true;
 		alertText = step*(100/(double)hcNorm.size()) + "%";
 		Coords c = hcNorm.get(step);
 		step++;
@@ -117,6 +116,8 @@ class mainFrame extends JPanel {
 	}
 
 	public void animateSweepImage() {
+		String alertHolder = "";
+
 		if (sweepR) {
 			if (Ris > Rhs + 50) {
 				Rmod = -1;
@@ -125,6 +126,7 @@ class mainFrame extends JPanel {
 				Rmod = 1;
 			}
 			Ris += Rmod;
+			alertHolder += "R Value: " + Integer.toString(Ris);
 		}
 		if (sweepr) {
 			if (ris > rhs + 50) {
@@ -134,6 +136,7 @@ class mainFrame extends JPanel {
 				rmod = 1;
 			}
 			ris += rmod;
+			alertHolder += '\n' + "r  Value: " + Integer.toString(ris);
 		}
 		if (sweepo) {
 			if (ois > ohs + 100) {
@@ -143,8 +146,10 @@ class mainFrame extends JPanel {
 				omod = 1;
 			}
 			ois += omod;
+			alertHolder += '\n' + "o Value: " + Integer.toString(ois);
 		}
 		
+		alertText = alertHolder;
 		validate(Integer.toString(Ris),Integer.toString(ris),Integer.toString(ois));
 		createImage();
 	}
@@ -170,7 +175,10 @@ class mainFrame extends JPanel {
 		}
 
 		if (alert) {
-			g.drawString(alertText,1200,710);
+			int height = 675;
+			for (String splitAlert : alertText.split("\n")) {
+				g.drawString(splitAlert,1200,height += 15);
+			}
 		}
 	}
 
@@ -210,6 +218,7 @@ class mainFrame extends JPanel {
 				calculateImage();
 				animOption = 0;
 				running = true;
+				alert = true;
 				time.start();
 			}
 		});
@@ -233,6 +242,7 @@ class mainFrame extends JPanel {
 				sweepo = obox.getState();
 				animOption = 1;
 				running = true;
+				alert = true;
 				time.start();
 			}
 		});
