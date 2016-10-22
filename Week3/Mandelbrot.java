@@ -28,15 +28,15 @@ public class Mandelbrot {
 
 	public HashMap<Integer,Integer> plotMandelbrot(int size) {
 		HashMap<Integer,Integer> output = new HashMap<Integer,Integer>();
-		double x = -2;
-		double y = -2;
+		double x = -1;
+		double y = -1;
 		for (int j=0; j<size; j++) {
-			x = -2;
+			x = -1;
 			for (int i=0; i<size; i++) {
 				output.put(size*j+i,checkBounds(new ComplexNumber(x,y)));
-				x += (double)4/((double)size-1);
+				x += (double)2/((double)size-1);
 			}
-			y += (double)4/((double)size-1);
+			y += (double)2/((double)size-1);
 		}
 		return output;
 	}

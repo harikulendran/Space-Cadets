@@ -224,13 +224,13 @@ class mainFrame extends JPanel {
 						double manI = Double.parseDouble(Rtf.getText());
 						double manJ = Double.parseDouble(rtf.getText());
 						mSet = new Mandelbrot(new ComplexNumber(manI,manJ));
+						mand = mSet.plotMandelbrot(500);
+						drawMandelbrot(500);
 					} catch (Exception ex) {
 						System.err.println(ex);
 						error = true;
 						errorText = "There was an error with your input, 0 + 0i Mandelbrot drawn";
 					}
-					mand = mSet.plotMandelbrot(500);
-					drawMandelbrot(500);
 				}
 			}
 		});
