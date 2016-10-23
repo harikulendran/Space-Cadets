@@ -23,10 +23,16 @@ public class Mandelbrot {
 
 	public int checkBounds(ComplexNumber c) {
 		ComplexNumber it = new ComplexNumber(Z.getReal(),Z.getImag());
-		for (int i=0; i<255; i++) {
+		for (int i=0; i<255+256+256; i++) {
 			it = iterate(it,c);
 			if (it.absolute() >= 4) {
-				return (new Color(0,i,0)).getRGB();
+				if (i<256) {
+					return (new Color(0,i,0)).getRGB();
+				} else if (i<256+256) {
+					return (new Color(i-256,255,0)).getRGB();
+				} else {
+					return (new Color(255,255,i-512)).getRGB();
+				}
 			}
 		}
 		return (new Color(0,0,125)).getRGB();
