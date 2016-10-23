@@ -35,7 +35,7 @@ public class Mandelbrot {
 	public HashMap<Integer,Integer> plotMandelbrot(int size) {
 		HashMap<Integer,Integer> output = new HashMap<Integer,Integer>();
 		double x = xCo - range/2;
-		double y = yCo - range/2;
+		double y = -yCo - range/2;
 		for (int j=0; j<size; j++) {
 			x = xCo - range/2;
 			for (int i=0; i<size; i++) {
