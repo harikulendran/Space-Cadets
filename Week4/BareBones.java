@@ -17,11 +17,10 @@ public class BareBones {
 	private Boolean Error = false;
 	private String errorList = "ERRORS:" + '\n';
 	private String currentError;
-	private String[] codeInput;
 	
 
 	//Interpret, this will check and run the code if there are no errors
-	public void Interpret(String[] in) {
+	private void Interpret(String[] in) {
 		errorCheck(in);
 		printAllVars();
 	}
@@ -64,6 +63,7 @@ public class BareBones {
 
 	//Execute
 	private void Execute(String[] inputEx) {
+		inputEx = removeWhiles(inputEx);
 		for (int i=0; i<inputEx.length; i++) {
 			chooseMethod(inputEx[i],i);
 		}
@@ -97,7 +97,7 @@ public class BareBones {
 		String[] loopCode = Whiles.get(line);
 		String parameter = splitCommand(splitCommand(loopCode[0])[1])[0];
 		check(parameter);
-		while (Variables.get(parameter) > 1) {
+		while (Variables.get(parameter) > 0) {
 			for (int i=1; i<loopCode.length; i++) {
 				chooseMethod(loopCode[i],line+i);
 			}
@@ -193,6 +193,33 @@ public class BareBones {
 		return true;
 	}
 	
+
+	//These two methods below remove the loop code from all necessary code snippets so they are not run more than they are
+	//supposed to be
+	private String[] removeWhiles(String[] allcode) {
+		for (Map.Entry<Integer,String[]> entry : Whiles.entrySet()) {
+			for (int i=entry.getKey()+1; i<entry.getKey()+entry.getValue().length; i++) {
+				allcode[i] = "IGNORE";
+			}
+			for (int i=1; i<entry.getValue().length; i++) {
+				if (entry.getValue()[i].contains("while")) {
+					String[] temp = entry.getValue();
+					temp = removeWhiles(temp,entry.getKey()+i,i);
+					entry.setValue(temp);
+				}
+			}
+		}
+		return allcode;
+	}
+
+	private String[] removeWhiles(String[] allcode, int Line, int myLine) {
+		System.out.println((myLine+1) + " " + Whiles.get(Line).length);
+		for (int i=myLine+1; i<Whiles.get(Line).length+myLine+1; i++) {
+			allcode[i] = "IGNORE";
+		}
+		return allcode;
+	}
+
 	//Checks if the given line has any errors of syntax and existence
 	private Boolean validateLine(String line) {
 		currentError = '\n' + "\t" + line + ";" + '\n' + "\t"+"\t";
@@ -241,7 +268,7 @@ public class BareBones {
 		}
 	}
 	
-	//input / manipulation methods
+	//Testing code, used to see what was going on in the program to find out what was going wrong
 	private void print(String var) {
 		System.out.println(Variables.get(var));
 	}
@@ -304,7 +331,6 @@ public class BareBones {
 
 	public static void main (String[] args) {
 		BareBones bb = new BareBones();
-		//String[] testing = {"clear X","incr X","incr X","clear Y","incr Y","incr Y","incr Y","clear Z","while X not 0 do","clear W","while Y not 0 do","incr Z","incr W","decr Y","end","while W not 0 do","incr Y","decr W","end","decr X","end"};
 		bb.Interpret(bb.loadCodeFromFile(args[0]));
 	}
 }
