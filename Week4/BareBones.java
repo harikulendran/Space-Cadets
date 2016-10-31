@@ -386,7 +386,7 @@ public class BareBones {
 				for (int i=0; i<args.length-1; i++) {
 					//Very messy but couldn't use \b contraction as I needed - to be included in word boundaries so had to 
 					//use the expanded form
-					if (!args[i].matches("(?:(?<![\\w-])(?=[\\w-])|(?<=[\\w-])(?![\\w-]))(-p|-s|-w)(?:(?<![\\w-])(?=[\\w-])|(?<=[\\w-])(?![\\w-]))")) {
+					if (!args[i].matches("(?:(?<![\\w-])(?=[\\w-])|(?<=[\\w-])(?![\\w-]))(-p|-s|-w|-h)(?:(?<![\\w-])(?=[\\w-])|(?<=[\\w-])(?![\\w-]))")) {
 						System.out.println("command '" + args[i] + "' not recognized");
 						return false;
 					}
