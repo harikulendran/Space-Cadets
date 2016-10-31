@@ -17,12 +17,17 @@ public class BareBones {
 	private Boolean Error = false;
 	private String errorList = "ERRORS:" + '\n';
 	private String currentError;
+
+	//Display Variables
+	private Boolean printAllSteps = false;
+	private Boolean safeExecute = false;
+	private Boolean waitForInput = false;
 	
 
 	//Interpret, this will check and run the code if there are no errors
 	private void Interpret(String[] in) {
 		errorCheck(in);
-		printAllVars();
+		printVariables();
 	}
 	
 	//CompileErrorCheck
@@ -97,9 +102,15 @@ public class BareBones {
 		String[] loopCode = Whiles.get(line);
 		String parameter = splitCommand(splitCommand(loopCode[0])[1])[0];
 		check(parameter);
+		int noOfLoops = 0;
 		while (Variables.get(parameter) > 0) {
 			for (int i=1; i<loopCode.length; i++) {
 				chooseMethod(loopCode[i],line+i);
+			}
+			noOfLoops++;
+			if (noOfLoops > 100 && safeExecute) {
+				System.out.println("100 loops exceeded, program exiting. Check loop or run out of safe mode");
+				System.exit(0);
 			}
 		}
 	}
@@ -112,6 +123,12 @@ public class BareBones {
 	}
 	
 	private void chooseMethod(String command, int Line) {
+		if (printAllSteps) {
+			System.out.println("Line " + Line + ": " + command);
+			printVariables();
+		}
+		if (waitForInput) {pause();}
+
 		String[] input = splitCommand(command);
 		if (input[0].equals("clear")) { BBclear(input[1]);}
 		else if (input[0].equals("incr")) {BBincr(input[1]);}
@@ -182,7 +199,7 @@ public class BareBones {
 						warning = true;
 						warningList += "While loop:" + '\n' +
 							"\t" + entry.getValue()[0] + '\n' +
-							"\t\t" + "MAY execute indefinitely" + '\n';
+							"\t\t" + "MAY execute indefinitely, consider executing with -s" + '\n';
 					}
 				}
 			}
@@ -213,7 +230,6 @@ public class BareBones {
 	}
 
 	private String[] removeWhiles(String[] allcode, int Line, int myLine) {
-		System.out.println((myLine+1) + " " + Whiles.get(Line).length);
 		for (int i=myLine+1; i<Whiles.get(Line).length+myLine+1; i++) {
 			allcode[i] = "IGNORE";
 		}
@@ -269,6 +285,7 @@ public class BareBones {
 	}
 	
 	//Testing code, used to see what was going on in the program to find out what was going wrong
+	/*
 	private void print(String var) {
 		System.out.println(Variables.get(var));
 	}
@@ -288,8 +305,9 @@ public class BareBones {
 			System.out.println();
 		}
 	}
+	*/
 	
-	//Puts the code input in a uniform fashion regardless of bad syntax
+	//Puts the code input in a uniform fashion regardless of bad formatting
 	private String[] splitCommand(String command) {
 		String[] output = new String[2];
 		command = command.replaceAll("^\\s+", "");
@@ -323,14 +341,78 @@ public class BareBones {
 				fullCode += curLine.replace("\t","");
 			}
 		} catch (IOException e) {
-			System.err.println(e);
+			System.err.println("System could not find the file specified");
+			System.exit(0);
 		}
 		String[] codeArray = fullCode.split(";");
 		return codeArray;
 	}
 
+	private void printVariables() {
+		System.out.println('\n' + "Current state of variables:");
+		for (Map.Entry<String,Integer> entry : Variables.entrySet()) {
+			System.out.println(entry.getKey() + " = " + entry.getValue());
+		}
+	}
+
+	private Boolean checkArguments(String[] args) {
+		if (args.length < 1) {
+			System.out.println("Please specify a file to interpret, use -h for help");
+			return false;
+		} else if (args.length == 1) {
+			if (args[0].equals("-h")) {
+				//print help
+				System.out.println("Commands:" + '\n' +
+						"--------------------------------------------------------------" + '\n' +
+						"  -h  :  prints this help window" + '\n' +
+						"  -p  :  prints the state of all variables after each line of" + '\n' +
+						"         code is executed" + '\n' +
+						"  -s  :  code is executed in safe mode, in this mode a while" + '\n' +
+						"         can only loop 100 times before an error is thrown" + '\n' +
+						"  -w  :  waits for the users input before executing the next" + '\n' +
+						"         line of code (automatically prints all lines)" + '\n' +
+						"**The code file (either local path or absolute path) should be" + '\n' +
+						"the last parameter passed to the interpreter**");
+				return false;
+			} else if (args[0].contains("-")) {
+				System.out.println("Please specify a file to interpret, use -h for help");
+				return false;
+			}
+		} else {
+			if(args[args.length-1].contains("-")) {
+				System.out.println("Please specify a file to interpret, make sure the file is entered last after all other commands");
+				return false;
+			} else {
+				for (int i=0; i<args.length-1; i++) {
+					//Very messy but couldn't use \b contraction as I needed - to be included in word boundaries so had to 
+					//use the expanded form
+					if (!args[i].matches("(?:(?<![\\w-])(?=[\\w-])|(?<=[\\w-])(?![\\w-]))(-p|-s|-w)(?:(?<![\\w-])(?=[\\w-])|(?<=[\\w-])(?![\\w-]))")) {
+						System.out.println("command '" + args[i] + "' not recognized");
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	private void setArguments(String[] args) {
+		if (Arrays.asList(args).contains("-p")) {printAllSteps = true;}
+		if (Arrays.asList(args).contains("-s")) {safeExecute = true;}
+		if (Arrays.asList(args).contains("-w")) {waitForInput = true; printAllSteps = true;}
+	}
+
+	private void pause() {
+		System.out.println("Press Enter to continue...");
+		try { System.in.read(); }
+		catch (Exception e) {}
+	}
+
 	public static void main (String[] args) {
 		BareBones bb = new BareBones();
-		bb.Interpret(bb.loadCodeFromFile(args[0]));
+		if (bb.checkArguments(args)) {
+			bb.setArguments(args);
+			bb.Interpret(bb.loadCodeFromFile(args[args.length-1]));
+		}
 	}
 }
