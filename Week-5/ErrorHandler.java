@@ -19,9 +19,7 @@ public class ErrorHandler {
 		//ONLY CHECK HAVA FILEs
 		HashMap<String,Command> commands = interpreter.getCommands();
 		for (String s : fileList) {
-			System.out.println(s);
 			String key = s.split("\\.")[0].toLowerCase();
-			System.out.println(key);
 			commandInfo.put(key,(commands.get(key).getCommandData()).split("\\|"));
 		}
 	}

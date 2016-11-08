@@ -8,8 +8,10 @@ public class Interpreter {
 	private ErrorHandler errorHandler;
 	private FileHandler fileHandler;
 	private String[] code;
+	private String path;
 
-	public Interpreter() {
+	public Interpreter(String _path) {
+		path = _path;
 		variables = new HashMap<String,Integer>();
 		commands = new HashMap<String,Command>();
 		fileHandler = new FileHandler();
@@ -38,7 +40,7 @@ public class Interpreter {
 	}
 
 	public void run() {
-		code = fileHandler.load("../Week 4/TestCode.txt",";");
+		code = fileHandler.load(path,";");
 		Boolean error = !errorHandler.checkFile(code);
 		for (String s : commands.keySet()) {
 			if(!commands.get(s).validateMe(code)) {
@@ -50,7 +52,6 @@ public class Interpreter {
 		} else {
 			for (currentLine = 0; currentLine<code.length; currentLine++) {
 				String[] splitLine = errorHandler.splitCommand(code[currentLine]); 
-				//ystem.out.println(splitLine[0]);
 				commands.get(splitLine[0]).function(splitLine[1]);
 				printVariables();
 				try {System.in.read();}
@@ -81,7 +82,11 @@ public class Interpreter {
 	}
 
 	public static void main(String[] args) {
-		Interpreter i = new Interpreter();
+		if (args.length != 1) {
+			System.out.println("Incorrect number of arguments, expects 1");
+			System.exit(0);
+		}
+		Interpreter i = new Interpreter(args[0]);
 		i.run();
 	}
 }
