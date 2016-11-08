@@ -48,9 +48,6 @@ public class While extends Command {
 			return false;
 		}
 		interpreter.setWhiles(Whiles);
-		for (Integer i : Whiles.keySet()) {
-			System.out.println(i + "  " + Whiles.get(i));
-		}
 		return true;
 	}
 }
