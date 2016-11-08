@@ -12,7 +12,8 @@ public class While extends Command {
 	}
 
 	protected void function(String var) {
-		checkVariable(var);
+		System.out.println(var.split(" ")[0]);
+		checkVariable(var.split(" ")[0]);
 		int currentLine = interpreter.getCurrentLine();
 		if (variables.get(var.split(" ")[0]).equals(Integer.parseInt(var.split(" ")[2]))) {
 			interpreter.setCurrentLine(Whiles.get(currentLine));
