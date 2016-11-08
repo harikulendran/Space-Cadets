@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.lang.reflect.*;
 
 public class Interpreter {
 	private HashMap<String,Integer> variables;
@@ -15,17 +16,30 @@ public class Interpreter {
 		variables = new HashMap<String,Integer>();
 		commands = new HashMap<String,Command>();
 		fileHandler = new FileHandler();
-		commands.put("incr",new Incr(this,errorHandler));
-		commands.put("decr",new Decr(this,errorHandler));
-		commands.put("while",new While(this,errorHandler));
-		commands.put("end",new End(this,errorHandler));
-		commands.put("clear",new Clear(this,errorHandler));
-		commands.put("ignore",new Ignore(this,errorHandler));
+		for (String s : fileHandler.getCommandList()) {
+			String[] splitFile = s.split("\\.");
+			if (splitFile[1].equals("java")) {
+				commands.put(splitFile[0].toLowerCase(),getCommand(splitFile[0]));
+			}
+		}
 		errorHandler = new ErrorHandler(this);
 		for(String s : commands.keySet()) {
 			commands.get(s).setErrorHandler(errorHandler);
 		}
 
+	}
+
+	private Command getCommand(String name) {
+		Command toSend = null;
+		name = name.substring(0,1).toUpperCase() + name.substring(1);
+		try {
+			Class myClass = Class.forName(name);
+			Constructor c = myClass.getConstructor(Interpreter.class,ErrorHandler.class);
+			toSend = (Command)c.newInstance(this,errorHandler);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return toSend;
 	}
 
 	public HashMap<String,Integer> getVariables() {

@@ -15,12 +15,9 @@ public class ErrorHandler {
 		Errors = "Errors were found in your code:";
 		file = new FileHandler();
 		commandInfo = new HashMap<String,String[]>();
-		String[] fileList = file.getCommandList();
-		//ONLY CHECK HAVA FILEs
 		HashMap<String,Command> commands = interpreter.getCommands();
-		for (String s : fileList) {
-			String key = s.split("\\.")[0].toLowerCase();
-			commandInfo.put(key,(commands.get(key).getCommandData()).split("\\|"));
+		for (String s : commands.keySet()) {
+			commandInfo.put(s,(commands.get(s).getCommandData()).split("\\|"));
 		}
 	}
 
