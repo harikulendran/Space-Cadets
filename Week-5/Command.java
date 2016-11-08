@@ -5,11 +5,15 @@ public abstract class Command {
 	protected Interpreter interpreter;
 	protected ErrorHandler errorHandler;
 	protected HashMap<String,Integer> variables;
+	protected int argNumber;
+	protected String arguments;
 
 	public Command(Interpreter _interpreter, ErrorHandler _errorHandler) {
 		interpreter = _interpreter;
 		errorHandler = _errorHandler;
 		variables = interpreter.getVariables();
+		argNumber = 0;
+		arguments = "";
 	}
 
 	protected void checkVariable(String var) {
@@ -24,8 +28,16 @@ public abstract class Command {
 		}
 	}
 
+	protected String getCommandData() {
+		return Integer.toString(argNumber) + "|" + arguments;
+	}
+
 	protected abstract void function(String var);
 	protected abstract Boolean validateMe(String[] code);
+	
+	public void setErrorHandler(ErrorHandler eh) {
+		errorHandler = eh;
+	}
 
 	protected void run(String var) {
 		checkVariable(var);

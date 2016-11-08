@@ -8,14 +8,21 @@ public class ErrorHandler {
 	private HashMap<String,String[]> commandInfo;
 	private FileHandler file;
 	private String[] inputCode;
+	private Interpreter interpreter;
 
-	public ErrorHandler() {
+	public ErrorHandler(Interpreter _interpreter) {
+		interpreter = _interpreter;
 		Errors = "Errors were found in your code:";
 		file = new FileHandler();
 		commandInfo = new HashMap<String,String[]>();
-		for (String s : file.load("InstructionSet.txt",";")) {
-			String[] splitInfo = s.split("\\|");
-			commandInfo.put(splitInfo[0],Arrays.copyOfRange(splitInfo,1,6));
+		String[] fileList = file.getCommandList();
+		//ONLY CHECK HAVA FILEs
+		HashMap<String,Command> commands = interpreter.getCommands();
+		for (String s : fileList) {
+			System.out.println(s);
+			String key = s.split("\\.")[0].toLowerCase();
+			System.out.println(key);
+			commandInfo.put(key,(commands.get(key).getCommandData()).split("\\|"));
 		}
 	}
 

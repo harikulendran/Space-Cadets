@@ -12,18 +12,29 @@ public class Interpreter {
 	public Interpreter() {
 		variables = new HashMap<String,Integer>();
 		commands = new HashMap<String,Command>();
-		errorHandler = new ErrorHandler();
 		fileHandler = new FileHandler();
 		commands.put("incr",new Incr(this,errorHandler));
 		commands.put("decr",new Decr(this,errorHandler));
 		commands.put("while",new While(this,errorHandler));
 		commands.put("end",new End(this,errorHandler));
-		commands.put("clear",new Ignore(this,errorHandler));
+		commands.put("clear",new Clear(this,errorHandler));
+		commands.put("ignore",new Ignore(this,errorHandler));
+		errorHandler = new ErrorHandler(this);
+		for(String s : commands.keySet()) {
+			commands.get(s).setErrorHandler(errorHandler);
+		}
 
 	}
 
 	public HashMap<String,Integer> getVariables() {
 		return variables;
+	}
+
+	private void printVariables() {
+		System.out.println('\n' + "line " + currentLine + ":");
+		for (String s: variables.keySet()) {
+			System.out.println(s + ": " + variables.get(s));
+		}
 	}
 
 	public void run() {
@@ -41,10 +52,7 @@ public class Interpreter {
 				String[] splitLine = errorHandler.splitCommand(code[currentLine]); 
 				//ystem.out.println(splitLine[0]);
 				commands.get(splitLine[0]).function(splitLine[1]);
-				System.out.println("Line " + (currentLine+1) + ": " + "X: " + variables.get("X"));
-				System.out.println("Line " + (currentLine+1) + ": " + "Y: " + variables.get("Y"));
-				System.out.println("Line " + (currentLine+1) + ": " + "W: " + variables.get("W"));
-				System.out.println("Line " + (currentLine+1) + ": " + "Z: " + variables.get("Z"));
+				printVariables();
 				try {System.in.read();}
 				catch (Exception e) {}
 			}
@@ -67,6 +75,9 @@ public class Interpreter {
 	}
 	public HashMap<Integer,Integer> getWhiles() {
 		return Whiles;
+	}
+	public HashMap<String,Command> getCommands() {
+		return commands;
 	}
 
 	public static void main(String[] args) {

@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 
 public class FileHandler {
@@ -25,6 +26,11 @@ public class FileHandler {
 		}
 		//System.out.println(unSplitOutput);
 		return unSplitOutput.split(deliminator);
+	}
+
+	public String[] getCommandList() {
+		File f = new File(System.getProperty("user.dir")+"//"+ "Commands"+"//");
+		return f.list();
 	}
 
 	public static void main (String[] args) {
