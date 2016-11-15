@@ -88,22 +88,42 @@ class ClientReader implements Runnable {
 	
 	public void run() {
 		DataInputStream in = getDataInStream(client);
-		try {
 			while(true) {
-				if(in.available()!=0) {
-					String message = getMessage(in);
+				if(dataIncoming(in)) {
+					String message;
+					try {
+						message = getMessage(in);
+					} catch (IOException e) {
+						break;
+					}
 					System.out.println(message);
 					if (message.split(" ")[1].equals("QUIT") && message.split(" ").length==2) {
 						allSockets.remove(client);
 					}
 					for (Socket s : allSockets) {
 						if (s != client) {
-							sendMessage(s,message);
+							try {
+								sendMessage(s,message);
+							} catch (IOException e) {
+								break;
+							}
 						}
 					}
 				}
 			}
-		} catch(Exception e){}
+			allSockets.remove(client);
+	}
+
+	private Boolean dataIncoming(DataInputStream in) {
+		try {
+			if (in.available()!=0) {
+				return true;
+			} else {
+				return false;
+			}
+		}catch (IOException e) {
+			return false;
+		}
 	}
 	
 	private DataInputStream getDataInStream(Socket client) {
@@ -111,7 +131,7 @@ class ClientReader implements Runnable {
 			InputStream serverStream = client.getInputStream();
 			DataInputStream dataIn = new DataInputStream(serverStream);
 			return dataIn;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			System.out.println("Unable to get Data Stream from server");
 			e.printStackTrace();
 			System.exit(-1);
@@ -119,18 +139,11 @@ class ClientReader implements Runnable {
 		}
 	}
 
-	private String getMessage(DataInputStream in) {
-		try {
+	private String getMessage(DataInputStream in) throws IOException {
 			return in.readUTF();
-		} catch (IOException e) {
-			System.out.println("Unable to get message");
-			e.printStackTrace();
-			System.exit(-1);
-			return null;
-		}
 	}
 
-	private void sendMessage(Socket socket, String message) {
+	private void sendMessage(Socket socket, String message) throws IOException {
 		new ClientSender(socket,message).run();
 	}
 }
@@ -144,30 +157,19 @@ class ClientSender {
 		message = _message;
 	}
 
-	public void run() {
+	public void run() throws IOException {
 		DataOutputStream dataOut = getDataOutStream(me);
 		writeToClient(dataOut,message);
 	}
 
-	private DataOutputStream getDataOutStream(Socket socket) {
-		try {
-			OutputStream socketStream = socket.getOutputStream();
-			DataOutputStream out = new DataOutputStream(socketStream);
-			return out;
-		} catch (Exception e) {
-			System.out.println("Unable to open Data Stream to Socket");
-			return null;
-		}
+	private DataOutputStream getDataOutStream(Socket socket) throws IOException {
+		OutputStream socketStream = socket.getOutputStream();
+		DataOutputStream out = new DataOutputStream(socketStream);
+		return out;
 	}
 	
 
-	private void writeToClient(DataOutputStream out, String message) {
-		try {
-			out.writeUTF(message);
-		} catch (Exception e) {
-			System.out.println("Unable to send message through Output Stream");
-			e.printStackTrace();
-			System.exit(-1);
-		}
+	private void writeToClient(DataOutputStream out, String message) throws IOException {
+		out.writeUTF(message);
 	}
 }
